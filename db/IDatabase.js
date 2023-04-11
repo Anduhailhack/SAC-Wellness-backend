@@ -3,7 +3,7 @@ const {MySQL} = require('./MySQL') //Intellisense shows error on windows but it 
 
 const Database = function(dbms) {
     if (!dbms || dbms == 'mongo')
-        this.dbms = new MongoDb()
+        this.dbms = new MongoDb(process.env.MONGO_CONNECTION)
     else if (dbms == 'mysql')
         this.dbms = new MySQL()
 }
