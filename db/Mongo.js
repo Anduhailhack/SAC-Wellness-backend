@@ -213,6 +213,7 @@ class APIFeatures {
         } else {
             this.query = this.query.limit(10)
         }
+        
     }
 }
 
