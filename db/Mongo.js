@@ -159,40 +159,97 @@ MongoDb.prototype.addPhysician = async function(f_name, m_name, l_name, email) {
 
 }
 
+class APIFeatures {
+    constructor(query, queryString){
+        this.query = query
+        this.queryString = queryString
+    }
+    
+    filter(){
+        //Exclude sort...
+        // gte
+        
+        const queryObj = {...this.queryString}
+        const exclude = ['sort', 'filter', 'limit', 'page']
+        exclude.forEach(el => delete queryObj[el])
+
+        const queryStr = JSON.stringify(queryObj)
+        queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`)
+        queryObj = JSON.parse(queryStr)
+
+        this.query = query.find(queryObj)
+        
+        // queryStr = queryStr.split(',').join(' ')
+        return this
+    }
+
+    sort(){
+        //filter the query
+        if(this.queryString.sort){
+            const sortBy = this.queryString.sort.split(',').join(' ')
+            this.query = query.sort(sortBy)
+        } else {
+            // this.query = query.sort()                    //default sort type
+        }
+
+        return this
+    }
+
+    fields(){
+        if(this.queryString.fields){
+            const fields = this.queryString.fields.split(',').join(' ')
+            this.query = this.query.select(fields)
+        } else {
+            this.query = this.query.select('-__v')             //default feilds
+        }
+    }
+
+    page(){
+        const limit = this.queryString.limit * 1
+        const page = this.queryString.page * 1
+        const skip = (page-1)*limit
+        if(this.queryString.page){
+            this.query = this.query.skip(skip).limit(limit)
+        } else {
+            this.query = this.query.limit(10)
+        }
+    }
+}
 
 MongoDb.prototype.getStudent = async function(queryString, res){        // needs the req.querey parameter
     
-    //Filtering the search req query 
-    const queryStr = {...queryString}
-    const excludeFields = ['sort', 'limit', 'page', 'fields']               
+    // //Filtering the search req query 
+    // const queryStr = {...queryString}
+    // const excludeFields = ['sort', 'limit', 'page', 'fields']               
 
-    excludeFields.forEach(el => delete queryStr[el])                        //removing sort limit page and fields property from the query
+    // excludeFields.forEach(el => delete queryStr[el])                        //removing sort limit page and fields property from the query
 
-    queryStr = JSON.stringify(queryStr)
-    queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`)          // reWriting gte gt lt lte as $gth $gt $lt $lte  -- Mongo command
-    queryStr = JSON.parse(queryStr)
+    // queryStr = JSON.stringify(queryStr)
+    // queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`)          // reWriting gte gt lt lte as $gth $gt $lt $lte  -- Mongo command
+    // queryStr = JSON.parse(queryStr)
 
-    const query = Student.find(query)
-
-
-    //Sorting the get resutl
-    if(queryStr.sort){
-    const sortString = queryStr.sort
-        sortString = sortString.split(',').join(' ')
-
-        query = query.sort(sortString)
-    } // else statement to add a default sort mechanism
+    // const query = Student.find(query)
 
 
-    //limiting the result to only the required value
-    if(queryStr.fields){
-            const fiels = queryStr.fields.split(',').join(' ')
-            query = query.select(fileds)
-        } else {                // else return only the f_name and the phote_no
-            query = query.select('f_name phone_no -__v')
-        }
+    // //Sorting the get resutl
+    // if(queryStr.sort){
+    // const sortString = queryStr.sort
+    //     sortString = sortString.split(',').join(' ')
+
+    //     query = query.sort(sortString)
+    // } // else statement to add a default sort mechanism
+
+
+    // //limiting the result to only the required value
+    // if(queryStr.fields){
+    //         const fiels = queryStr.fields.split(',').join(' ')
+    //         query = query.select(fileds)
+    //     } else {                // else return only the f_name and the phote_no
+    //         query = query.select('f_name phone_no -__v')
+    //     }
 
 }
 
 
 module.exports = {MongoDb}
+
