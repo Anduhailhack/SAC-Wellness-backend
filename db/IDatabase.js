@@ -1,4 +1,4 @@
-const {MongoDb} = require('./Mongo') //Intellisense shows error on windows but it should work
+const {MongoDb} = require('./Mongo/Mongo') //Intellisense shows error on windows but it should work
 const {MySQL} = require('./MySQL') //Intellisense shows error on windows but it should work
 
 const Database = function(dbms) {
