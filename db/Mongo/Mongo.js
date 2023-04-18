@@ -2,6 +2,7 @@
 const mongoose = require('mongoose')
 
 const APISearchFeatures = require('./APISearchFeatures')
+const {Admin, Student, Physician} = require('./SchemaModels')
 
 const MongoDb = function (connection) {
     //TODO: initiating the connection with database here
@@ -17,29 +18,6 @@ const MongoDb = function (connection) {
 
 MongoDb.prototype.addAdmin =  async function(f_name, m_name, l_name, email, speciality, working_hour, communication, phone_no) {
     //TODO: putting admin information in a mongo database
-    const adminSchema = new mongoose.Schema({
-        f_name: {
-            type: String,
-            required: [true, 'First name cannot be empty']
-        }, 
-        m_name: String,
-        l_name: {
-            type: String,
-            required: [true, 'Last name cannot be empty']
-        }, email: {
-            type: String,
-            required: [true, 'Email cannot be emoty']
-        },
-         speciality: String,
-         working_hour: String, 
-         communication: Sting, 
-         phone_no: {
-            type: String,
-            required: [true, "Admin Phone Number missing"]
-         }
-    })
-
-    const Admin = mongoose.model('Admin', adminSchema)
 
     try {
         const newAdmin = await Admin.create({
@@ -66,22 +44,6 @@ MongoDb.prototype.addAdmin =  async function(f_name, m_name, l_name, email, spec
     }
 }
 
-const studentSchema = new mongoose.Schema({
-    f_name: String,
-    l_name: String,
-    email: {
-        type: String,
-        required: [true, 'Email cannot be emoty']
-    },
-    ed_info: {
-        batch: String,
-        department: String
-    },
-    diagnosis: {
-
-    }
-})
-const Student = mongoose.model('Student', studentSchema)
 
 // MongoDb.prototype.addStudent = async function(f_name, m_name, l_name, email, ed_info, diagnosis) {
 //     const {batch, department} = ed_info
@@ -117,23 +79,6 @@ const Student = mongoose.model('Student', studentSchema)
 MongoDb.prototype.addPhysician = async function(f_name, m_name, l_name, email) {
     const {batch, department} = ed_info
     const {} = diagnosis
-
-    const physicianSchema = new mongoose.Schema({
-        f_name: {
-            type: String,
-            required: [true, 'First name cannot be empty'],
-        },
-        l_name: {
-            type: String,
-            required: [true, 'Last name cannot be empty'],
-        },
-        email: {
-            type: String,
-            required: [true, 'Email cannot be emoty']
-        },
-
-    })
-    const Physician = mongoose.model('Physician', physicianSchema)
 
 
     try {
