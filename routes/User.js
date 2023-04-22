@@ -9,7 +9,5 @@ router.get('/', (req, res) => {
     res.end('user working')
 })
 
-router.post('/addStudent', addStudent)
-router.get('/getStudents', getStudents)
 
 module.exports = router
