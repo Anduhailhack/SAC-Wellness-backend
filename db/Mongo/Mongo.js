@@ -1,7 +1,7 @@
 // Implement interfaces defined in IDatabase file, specific to mongo db
 const mongoose = require('mongoose')
 
-const APISearchFeatures = require('./APISearchFeatures')
+const {APISearchFeatures} = require('./APISearchFeatures')
 const {Admin, Student, Physician} = require('./SchemaModels')
 
 const MongoDb = function (connection) {
@@ -12,9 +12,9 @@ const MongoDb = function (connection) {
     
     //TODO: database URI can be taken from .env or can be set as a constant here
 
-    // // query from the request.body
-    // this.queryString = queryString
 }
+
+        // POST Requests
 
 MongoDb.prototype.addAdmin =  async function(f_name, m_name, l_name, email, speciality, working_hour, communication, phone_no) {
     //TODO: putting admin information in a mongo database
@@ -30,95 +30,24 @@ MongoDb.prototype.addAdmin =  async function(f_name, m_name, l_name, email, spec
             communication, 
             phone_no
         })
+        console.log("User created successfully");
 
-        res.status(200).json({
-            status: "success",
-            data: {
-                newAdmin
-            }
-        })
+        // res.status(200).json({
+        //     status: "success",
+        //     data: {
+        //         newAdmin
+        //     }
+        // })
     } catch (error) {
-        res.status(401).json({
-            status: "failue"
-        })
+        // res.status(401).json({
+        //     status: "failue"
+        // })
+        console.log("Error Creating a user");
     }
 }
 
-
-// MongoDb.prototype.addStudent = async function(f_name, m_name, l_name, email, ed_info, diagnosis) {
-//     const {batch, department} = ed_info
-//     const {} = diagnosis
-
-//     try {
-//         const newStudent = await Student.create({
-//             f_name, 
-//             m_name, 
-//             l_name, 
-//             email,
-//             ed_info, 
-//             diagnosis
-//         })
-
-//         res.status(200).json({
-//             status: "success",
-//             data: {
-//                 newStudent
-//             }
-//         })
-//     } catch (error) {
-//         res.status(401).json({
-//             status: "failue"
-//         })
-//     } 
-
-
-// }
-
-
-
-MongoDb.prototype.addPhysician = async function(f_name, m_name, l_name, email) {
-    const {batch, department} = ed_info
-    const {} = diagnosis
-
-
-    try {
-        const newPhysician = await Physician.create({
-            f_name, 
-            m_name, 
-            l_name, 
-            email,
-            ed_info, 
-            diagnosis
-        })
-
-        res.status(200).json({
-            status: "success",
-            data: {
-                newPhysician
-            }
-        })
-    } catch (error) {
-        res.status(401).json({
-            status: "failue"
-        })
-    } 
-
-}
-
-
-
-        // Get Requests
-
-// MongoDb.prototype.getStudents = async function(queryString, reqQuery){        // needs the Model.find query string and the req.querey parameter
-    
-//     const studAPI = new APISearchFeatures(queryString, reqQuery).filter().sort().fields().page()
-//     const gettedStuds = await studAPI.query
-
-//     return gettedStuds;
-// }
-
-
-exports.addStudent = async function(f_name, m_name, l_name, email, ed_info, diagnosis) {
+        // Why don't we pass the req.body object as an argument? It will be better handling the respone here?
+MongoDb.prototype.addStudent = async function(f_name, m_name, l_name, email, ed_info, diagnosis) {
     const {batch, department} = ed_info
     const {} = diagnosis
 
@@ -132,22 +61,55 @@ exports.addStudent = async function(f_name, m_name, l_name, email, ed_info, diag
             diagnosis
         })
 
-        res.status(200).json({
-            status: "success",
-            data: {
-                newStudent
-            }
-        })
+        console.log("User created successfully");
+        // res.status(200).json({
+        //     status: "success",
+        //     data: {
+        //         newStudent
+        //     }
+        // })
     } catch (error) {
-        res.status(401).json({
-            status: "failue"
-        })
+        // res.status(401).json({
+        //     status: "failue"
+        // })
+        console.log("Error Creating a User");
     } 
+}
 
+MongoDb.prototype.addPhysician = async function(f_name, m_name, l_name, email) {
+    const {batch, department} = ed_info
+    const {} = diagnosis
+
+    try {
+        const newPhysician = await Physician.create({
+            f_name, 
+            m_name, 
+            l_name, 
+            email,
+            ed_info, 
+            diagnosis
+        })
+
+        console.log("User created successfully");
+        // res.status(200).json({
+        //     status: "success",
+        //     data: {
+        //         newPhysician
+        //     }
+        // })
+    } catch (error) {
+        // res.status(401).json({
+        //     status: "failue"
+        // })
+        console.log("Error Creating a User");
+
+    } 
 
 }
 
-exports.getStudents = async function(queryString, reqQuery){        // needs the Model.find query string and the req.querey parameter
+        // GET Requests
+
+MongoDb.prototype.getStudents = async function(queryString, reqQuery){        // needs the "Model.find()" query string and the "req.query" parameter
     
     const studAPI = new APISearchFeatures(queryString, reqQuery).filter().sort().fields().page()
     const gettedStuds = await studAPI.query
@@ -155,6 +117,6 @@ exports.getStudents = async function(queryString, reqQuery){        // needs the
     return gettedStuds;
 }
 
-// module.exports = {MongoDb}
+module.exports = {MongoDb}
 
 

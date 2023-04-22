@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+
 // Admin's Schema and Model
 const adminSchema = new mongoose.Schema({
     f_name: {
@@ -14,14 +16,13 @@ const adminSchema = new mongoose.Schema({
     },
      speciality: String,
      working_hour: String, 
-     communication: Sting, 
+     communication: String, 
      phone_no: {
         type: String,
         required: [true, "Admin Phone Number missing"]
      }
 })
-
-export const Admin = mongoose.model('Admin', adminSchema)
+module.exports.Admin = mongoose.model('Admin', adminSchema)
 
 
 
@@ -41,7 +42,7 @@ const studentSchema = new mongoose.Schema({
 
     }
 })
-export const Student = mongoose.model('Student', studentSchema)
+module.exports.Student = mongoose.model('Student', studentSchema)
 
 
 // Physician's Schema and Model
@@ -60,4 +61,4 @@ const physicianSchema = new mongoose.Schema({
     },
 
 })
-export const Physician = mongoose.model('Physician', physicianSchema)
+module.exports.Physician = mongoose.model('Physician', physicianSchema)

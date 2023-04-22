@@ -58,5 +58,3 @@ class APISearchFeatures {
         
     }
 }
-
-// module.exports = APISearchFeatures
