@@ -2,7 +2,7 @@
 const mongoose = require('mongoose')
 
 const {APISearchFeatures} = require('./APISearchFeatures')
-const {Admin, Student, Physician} = require('./SchemaModels')
+const {Admin, Student, Physician, Requests} = require('./SchemaModels')
 
 const MongoDb = function (connection) {
     //TODO: initiating the connection with database here
@@ -32,16 +32,7 @@ MongoDb.prototype.addAdmin =  async function(f_name, m_name, l_name, email, spec
         })
         console.log("User created successfully");
 
-        // res.status(200).json({
-        //     status: "success",
-        //     data: {
-        //         newAdmin
-        //     }
-        // })
     } catch (error) {
-        // res.status(401).json({
-        //     status: "failue"
-        // })
         console.log("Error Creating a user");
     }
 }
@@ -60,23 +51,14 @@ MongoDb.prototype.addStudent = async function(f_name, m_name, l_name, email, ed_
             ed_info, 
             diagnosis
         })
-
         console.log("User created successfully");
-        // res.status(200).json({
-        //     status: "success",
-        //     data: {
-        //         newStudent
-        //     }
-        // })
+
     } catch (error) {
-        // res.status(401).json({
-        //     status: "failue"
-        // })
         console.log("Error Creating a User");
     } 
 }
 
-MongoDb.prototype.addPhysician = async function(f_name, m_name, l_name, email) {
+MongoDb.prototype.addServiceProvider = async function(f_name, m_name, l_name, email) {
     const {batch, department} = ed_info
     const {} = diagnosis
 
@@ -89,33 +71,62 @@ MongoDb.prototype.addPhysician = async function(f_name, m_name, l_name, email) {
             ed_info, 
             diagnosis
         })
-
         console.log("User created successfully");
-        // res.status(200).json({
-        //     status: "success",
-        //     data: {
-        //         newPhysician
-        //     }
-        // })
-    } catch (error) {
-        // res.status(401).json({
-        //     status: "failue"
-        // })
-        console.log("Error Creating a User");
 
+    } catch (error) {
+        console.log("Error Creating a User");
     } 
 
 }
 
+MongoDb.prototype.addRequest = async function(stud_id, req_team_id, service_provider_id, urgency){f
+    try {
+            const newRequest = await Requests.create({
+                stud_id,
+                req_team_id, 
+                service_provider_id, 
+                urgency
+            })
+
+            console.log("Request created");
+    } catch (error) {
+            console.log("Error: Request not created.");
+    }
+}
         // GET Requests
 
-MongoDb.prototype.getStudents = async function(queryString, reqQuery){        // needs the "Model.find()" query string and the "req.query" parameter
+
+MongoDb.prototype.getAdmins = async function(queryStr, callback){        // needs the "Model.find()" query string and the "req.query" parameter
+            const adminAPI = new APISearchFeatures(Admin.find(), queryStr).filter().sort().fields().page()
+            const gettedAdmins = await adminAPI.query
+        
+            callback(gettedAdmins)
+        }
+
+MongoDb.prototype.getStudents = async function(queryStr, callback){        // needs the "Model.find()" query string and the "req.query" parameter
     
-    const studAPI = new APISearchFeatures(queryString, reqQuery).filter().sort().fields().page()
+    const studAPI = new APISearchFeatures(Student.find(), queryStr).filter().sort().fields().page()
     const gettedStuds = await studAPI.query
 
-    return gettedStuds;
+    callback(gettedStuds)
 }
+
+
+//Get Mental Health Team  => getPhysicial as all are mental doctors
+MongoDb.prototype.getMentalHealthTeam = async function(queryStr, callback){
+    const mentalPhysicians = new APISearchFeatures(Physician.find(), queryStr).filter().sort().fields().page()
+    const gettedPhys = await mentalPhysicians.query
+
+    callback(gettedPhys)
+} 
+
+MongoDb.prototype.getAvailableMentalHealthTeam = async function(callback){
+    const mentalPhysicians = new APISearchFeatures(Physician.find({available : true})).sort().fields().page()
+    const gettedPhys = await mentalPhysicians.query
+
+    callback(gettedPhys)
+} 
+
 
 module.exports = {MongoDb}
 
