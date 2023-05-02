@@ -22,6 +22,8 @@ app.use('/user', userAuth, user)
 app.use('/admin', adminAuth, admin)
 app.use('/service-provider', serviceProviderAuth, serviceProvider)
 
+const db = new Database('mongo')
+
 app.post('/setWebhookClientRequests', async (req, res) => {
     try {
         const {
