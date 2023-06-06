@@ -1,5 +1,8 @@
 const express = require('express')
 const router = express.Router()
+const { sendAppointmentRequest, recieveAppointmentRequest, sendBookingConfirmation,
+    recieveBookingConfirmation } = require("../utils/AppointmentNotification");
+
 
 const {db} = require('../Mongo/Mongo')
 
@@ -69,6 +72,9 @@ router.post('/verify', (req, res) => {
     }
 })
 
+/*
+Send confiramtion message to Users
+*/
 router.post('/setAppointment', (req, res) => {      //Checked
     try {   
         const {
@@ -79,6 +85,21 @@ router.post('/setAppointment', (req, res) => {      //Checked
             remark
         } = req.body
 
+        if (!student_id || !request_id || !serviceProvider || !time || !remark) {
+			return res
+			  .status(400)
+			  .json({ message: "Please provide all required fields" });
+		  }
+	
+		const confirmationMessage = {
+			studentId : String(student_id),
+			requestTeamId: String(request_id),
+			serviceProvider: String(serviceProvider),
+			Time: String(time),
+			Remark: String(remark)
+		}
+
+        
         db.setAppointment(student_id, request_id, serviceProvider, time, remark, (result)=>{
             // TODO: Find the request with its _id and set the status 'updated'
             if (result.status){
@@ -87,6 +108,16 @@ router.post('/setAppointment', (req, res) => {      //Checked
             else 
                 res.status(501).json({status : 'error', result : {msg : 'Setting appointment was unsuccessful.'}})
         })
+        
+
+        //Confirmation Message to queue
+		sendBookingConfirmation(confirmationMessage).then(() => {
+			console.log("Confirmation message sent to queue");
+			res.send({ConfirmationSentToQueue: confirmationMessage});
+		  }).catch((err) => {
+			console.error(err);
+		  });
+
     } catch (error) {
         res.status(501).json({status : 'error', result : {msg : 'Setting appointment was unsuccessful.'}})
     }

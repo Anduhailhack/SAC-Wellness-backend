@@ -107,9 +107,22 @@ router.post("/getServiceProvider", (req, res) => {
 	}
 })
 
+/*
+Also add recieveAppointmentRequest for notification 
+*/
 router.get("/getRequests", (req, res) => {	//Checked
 	try {
 		const {stud_id, req_team,_id, service_provider_id, issuedAt} = req.body
+
+		/**
+			recieveAppointmentRequest().then((result) => {
+				console.log("Appointment request recieved from queue");
+				res.json(result);
+				
+			}).catch((err) => {
+				console.error(err);
+			});		
+		 */
 
 		db.getRequests({stud_id, req_team,_id, service_provider_id, issuedAt}, (result)=> {
 			if(result.status) {

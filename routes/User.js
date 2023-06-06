@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const { sendAppointmentRequest, recieveAppointmentRequest, sendBookingConfirmation,
+    recieveBookingConfirmation } = require("../utils/AppointmentNotification");
 require("dotenv").config();
 
 const {db} = require('../Mongo/Mongo')
@@ -9,27 +11,75 @@ router.get("/", (req, res) => {
 });
 
 
+/*
+Send appointment request message to Service Provider
+*/
 router.post("/addRequest", (req, res) => {		//Checked
 	try {
 		const { stud_id, req_team_id, service_provider_id, issuedAt, urgency } = req.body;
+
+		/*
+		if (!stud_id || !req_team_id || !service_provider_id || !urgency || !issuedAt) {
+			return res
+			  .status(400)
+			  .json({ message: "Please provide all required fields" });
+		  }
+	
+		const request = {
+			studentId : String(stud_id),
+			requestTeamId: String(req_team_id),
+			serviceProviderId: String(service_provider_id),
+			IssuedAt: String(issuedAt),
+			Urgency: String(urgency)
+		}
+	
+		sendAppointmentRequest(request).then(() => {
+			console.log("Appointment request sent to queue");
+			res.send({RequestSentToQueue: request});
+		  }).catch((err) => {
+			console.error(err);
+		  });
+		  */
+		
 		db.addRequest(stud_id, req_team_id, service_provider_id, issuedAt, urgency, (result)=> {
 			if(result.status)
 				return res.status(200).json({ status: "success"});
 			throw new Error("Request Adding failed")
-
 		});
+		
 	} catch (error) {
 		res.status(400).json({ status: "error", result: error });
 	}
 });
 
-
+/*
+Get appointment confirmation message from Service Provider
+*/
 router.get("/getAppointment", async (req, res) => {
-	const { stud_id } = req.params;
+	const { stud_id } = req.query;
 
+	recieveBookingConfirmation().then((result) => {
+		console.log(stud_id);
+		console.log("Appointment confirmation recieved");
+
+		if(stud_id){        
+			//result.filter(stud_id);
+			const confirmationMessages = result.appointmentConfirmation;
+			const filteredResult = confirmationMessages.filter((appointment) => appointment.studentId === stud_id);   
+			res.json(filteredResult);
+		  }else{
+			res.json(result);
+		  }
+
+	  }).catch((err) => {
+		console.error(err);
+	  });
+
+	  /*
 	db.getAppointments(stud_id, (appointment) => {
 		res.status(200).json({ status: "success", result: appointment });
 	});
+	*/
 });
 
 router.get("/getMedicalHealthTeam", async (req, res) => {

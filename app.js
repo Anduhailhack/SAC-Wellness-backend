@@ -195,7 +195,7 @@ app.post("/user/verify", (req, res) => {
 	}
 });
 
-app.use("/user", userAuth, user);
+app.use("/user",userAuth, user);
 
 /*******************ADMIN***********************/
 //For API test purposes
